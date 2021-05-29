@@ -10,7 +10,6 @@
 /*
 * 
 * This program models luck factor in determinig success of a person based on his skill and talent
-* Very basic based on simple average
 *
 */
 
@@ -263,8 +262,8 @@ int main()
     vector<Averages *> averageList;
     int NUMBER_OF_RECORDS_PER_RUN = 15000; // Total number of records to generate in one run
     int LUCK_SHARE_PER_RUN = 5;            // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
-    int AVG_COUNT_PER_RUN = 50;            // Number of records from highest score to process for calculation of average
-    int NUMBER_OF_RUNS = 1000;             // Number of time to repeat the complete process
+    int AVG_COUNT_PER_RUN = 10;            // Number of records from highest score to process for calculation of average
+    int NUMBER_OF_RUNS = 100;              // Number of time to repeat the complete process
     bool PRINT_AVERAGES = false;           // Wheather to print averages of every run
     bool PRINT_FINAL_AVERAGE = true;       // Wheather to print final average of NUMBER_OF_RUNS
     bool PRINT_TABLE = false;              // Wheather to print the complete table record
@@ -279,4 +278,15 @@ int main()
     {
         printAverages_Average(averageList);
     }
+
+    /* 
+
+OUTPUT EXPLANATION
+luckAverage 4.403  ->     out of LUCK_SHARE_PER_RUN
+luckRankAverage 1792 ->   out of NUMBER_OF_RECORDS_PER_RUN
+skillAverage 94.41 ->     out of 100- LUCK_SHARE_PER_RUN
+skillRankAverage 94.64 -> out of NUMBER_OF_RECORDS_PER_RUN
+scoreAverage 98.81 ->     out of 100
+rankAverage 25.5 ->       out of NUMBER_OF_RECORDS_PER_RUN
+*/
 }
