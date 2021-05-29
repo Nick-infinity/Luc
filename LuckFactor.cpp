@@ -249,7 +249,7 @@ void printAverages_Average(vector<Averages *> &averageList)
 }
 void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Averages *> &averageList, bool PRINT_AVERAGES,
                     bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE, bool SHOW_PARTIAL_TABLE,
-                    int NUMBER_OF_RECORDS_TO_DISPLAY)
+                    int NUMBER_OF_RECORDS_TO_DISPLAY, int SORT_ON)
 
 {
     double skillShare = 100 - luckShare;
@@ -266,6 +266,26 @@ void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Ave
     sortOnSkills(persons);
     calculateFinalScore(persons);
     sortOnScore(persons);
+    switch (SORT_ON)
+    {
+    case 0:
+    {
+        break;
+    }
+    case 1:
+    {
+        sortOnLuck(persons);
+        break;
+    }
+    case 2:
+    {
+        sortOnSkills(persons);
+        break;
+    }
+    default:
+        break;
+    }
+
     display(persons, avgCount, averageList, PRINT_AVERAGES, PRINT_FINAL_AVERAGE, PRINT_TABLE, SHOW_PARTIAL_TABLE, NUMBER_OF_RECORDS_TO_DISPLAY);
 }
 
@@ -273,20 +293,21 @@ int main()
 {
     srand(time(0));
     vector<Averages *> averageList;
-    int NUMBER_OF_RECORDS_PER_RUN = 10;   // Total number of records to generate in one run
-    int LUCK_SHARE_PER_RUN = 5;           // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
-    int AVG_COUNT_PER_RUN = 11;           // Number of records from highest score to process for calculation of average
-    int NUMBER_OF_RUNS = 1;               // Number of time to repeat the complete process
-    bool PRINT_AVERAGES = false;          // Wheather to print averages of every run
-    bool PRINT_FINAL_AVERAGE = true;      // Wheather to print final average of NUMBER_OF_RUNS
-    bool PRINT_FULL_TABLE = false;        // Wheather to print the complete table record
-    bool SHOW_PARTIAL_TABLE = true;       // To display partial records from top
-    int NUMBER_OF_RECORDS_TO_DISPLAY = 5; // Number of records to display from top
+    int NUMBER_OF_RECORDS_PER_RUN = 13800; // Total number of records to generate in one run
+    int LUCK_SHARE_PER_RUN = 5;            // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
+    int AVG_COUNT_PER_RUN = 11;            // Number of records from highest score to process for calculation of average
+    int NUMBER_OF_RUNS = 1;                // Number of time to repeat the complete process
+    bool PRINT_AVERAGES = false;           // Wheather to print averages of every run
+    bool PRINT_FINAL_AVERAGE = true;       // Wheather to print final average of NUMBER_OF_RUNS
+    bool PRINT_FULL_TABLE = false;         // Wheather to print the complete table record
+    bool SHOW_PARTIAL_TABLE = true;        // To display partial records from top
+    int NUMBER_OF_RECORDS_TO_DISPLAY = 50; // Number of records to display from top
+    int SORT_BASED_ON = 0;                 // 0 -> finalScore,  1->luck,  2->skills
 
-        for (int i = 0; i < NUMBER_OF_RUNS; i++)
+    for (int i = 0; i < NUMBER_OF_RUNS; i++)
     {
         calculateScore(NUMBER_OF_RECORDS_PER_RUN, LUCK_SHARE_PER_RUN, AVG_COUNT_PER_RUN, averageList, PRINT_AVERAGES,
-                       PRINT_FINAL_AVERAGE, PRINT_FULL_TABLE, SHOW_PARTIAL_TABLE, NUMBER_OF_RECORDS_TO_DISPLAY);
+                       PRINT_FINAL_AVERAGE, PRINT_FULL_TABLE, SHOW_PARTIAL_TABLE, NUMBER_OF_RECORDS_TO_DISPLAY, SORT_BASED_ON);
     }
 
     if (NUMBER_OF_RUNS > 0 && PRINT_FINAL_AVERAGE)
