@@ -23,8 +23,9 @@ class Person
 {
 public:
     static int count;
-    int luck;
-    int skills_talent;
+    double luck;
+    double skills_talent;
+    double score;
     int finalRank;
     int luckRank;
     int skillsRank;
@@ -38,15 +39,20 @@ public:
         this->index = count;
     }
 
-    bool compareLuck(Person *p1, Person *p2)
+    bool compareLuck(Person *p1, Person *p2) // decreasing
     {
 
-        return (p1->luck < p2->luck);
+        return (p1->luck > p2->luck);
     }
 
-    bool compareSkills(Person *p1, Person *p2)
+    bool compareSkills(Person *p1, Person *p2) // decreasing
     {
-        return (p1->skills_talent < p2->skills_talent);
+        return (p1->skills_talent > p2->skills_talent);
+    }
+
+    bool compareScore(Person *p1, Person *p2) // sort int decreasing order of score
+    {
+        return (p1->score > p2->score);
     }
 
     static void sortOnLuck(vector<Person *> persons)
@@ -58,13 +64,29 @@ public:
         }
     }
 
-        static void sortOnSkills(vector<Person *> persons)
+    static void sortOnSkills(vector<Person *> persons)
     {
         sort(persons.begin(), persons.end(), compareSkills);
         for (int i = 0; i < persons.size(); i++)
         {
             persons[i]->skillsRank = i + 1;
         }
+    }
+
+    static void calculateScore(vector<Person *> persons, double luckShare, double skillShare)
+    {
+
+        for (int i = 0; i < persons.size(); i++)
+        {
+            int finalScore = generateScore(persons[i], luckShare, skillShare);
+
+            persons[i]->score = finalScore;
+        }
+    }
+
+    static void sortOnScore(vector<Person *> persons)
+    {
+        sort(persons.begin(), persons.end(), compareScore);
     }
 };
 
@@ -75,11 +97,19 @@ int Person::count = 0; // set initial count to 0
 int generateRandom(int lower, int upper) //[lower,upper]
 {
 
-    int num = (rand() %
-               (upper - lower + 1)) +
-              lower;
+    double num = (rand() %
+                  (upper - lower + 1)) +
+                 lower;
 
     return num;
+}
+
+int generateScore(Person *p1, double luckShare, double skillShare) // generate score from luck and sill_talent
+{
+    double luck = p1->luck;
+    double skills = p1->skills_talent;
+    double score = luck * (luckShare / 100) + skills * (skillShare / 100);
+    return score;
 }
 
 main()
