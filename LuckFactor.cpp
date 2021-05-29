@@ -147,10 +147,11 @@ void sortOnScore(vector<Person *> &persons)
 
 // to nicely display information
 void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averagesList, bool PRINT_AVERAGES,
-             bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE)
+             bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE, bool SHOW_PARTIAL_TABLE = false,
+             int NUMBER_OF_RECORDS_TO_DISPLAY = 11)
 {
     int field_one_width = 8, field_two_width = 12;
-    if (PRINT_TABLE)
+    if (PRINT_TABLE || SHOW_PARTIAL_TABLE)
     {
         cout << "Sno.  "
              << "Index  "
@@ -158,7 +159,7 @@ void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averag
              << "Luck "
              << "SkillRank "
              << "Skills "
-             << "Final_Rank "
+             << "Final_Rank   "
              << "Score " << endl
              << endl;
     }
@@ -180,9 +181,20 @@ void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averag
             scoreAverage = scoreAverage + p->score;
             rankAverage = rankAverage + p->finalRank;
         }
-        if (PRINT_TABLE)
+        if (PRINT_TABLE || SHOW_PARTIAL_TABLE)
         {
-            cout << setprecision(4) << i + 1 << setw(field_one_width) << p->index << setw(field_one_width) << p->luckRank << setw(9) << p->luck << setw(field_one_width) << p->skillsRank << setw(field_one_width) << p->skills_talent << setw(field_one_width) << p->finalRank << setw(field_two_width) << p->score << endl;
+            if (PRINT_TABLE)
+            {
+                cout << setprecision(4) << i + 1 << setw(field_one_width) << p->index << setw(field_one_width) << p->luckRank << setw(9) << p->luck << setw(field_one_width) << p->skillsRank << setw(field_one_width) << p->skills_talent << setw(field_one_width) << p->finalRank << setw(field_two_width) << p->score << endl;
+            }
+
+            else
+            {
+                if (i < NUMBER_OF_RECORDS_TO_DISPLAY)
+                {
+                    cout << setprecision(4) << i + 1 << setw(field_one_width) << p->index << setw(field_one_width) << p->luckRank << setw(9) << p->luck << setw(field_one_width) << p->skillsRank << setw(field_one_width) << p->skills_talent << setw(field_one_width) << p->finalRank << setw(field_two_width) << p->score << endl;
+                }
+            }
         }
     }
     if (PRINT_AVERAGES)
@@ -236,7 +248,8 @@ void printAverages_Average(vector<Averages *> &averageList)
          << "rankAverage " << rankAverage / avgCount << endl;
 }
 void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Averages *> &averageList, bool PRINT_AVERAGES,
-                    bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE)
+                    bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE, bool SHOW_PARTIAL_TABLE,
+                    int NUMBER_OF_RECORDS_TO_DISPLAY)
 
 {
     double skillShare = 100 - luckShare;
@@ -253,25 +266,27 @@ void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Ave
     sortOnSkills(persons);
     calculateFinalScore(persons);
     sortOnScore(persons);
-    display(persons, avgCount, averageList, PRINT_AVERAGES, PRINT_FINAL_AVERAGE, PRINT_TABLE);
+    display(persons, avgCount, averageList, PRINT_AVERAGES, PRINT_FINAL_AVERAGE, PRINT_TABLE, SHOW_PARTIAL_TABLE, NUMBER_OF_RECORDS_TO_DISPLAY);
 }
 
 int main()
 {
     srand(time(0));
     vector<Averages *> averageList;
-    int NUMBER_OF_RECORDS_PER_RUN = 15000; // Total number of records to generate in one run
-    int LUCK_SHARE_PER_RUN = 5;            // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
-    int AVG_COUNT_PER_RUN = 10;            // Number of records from highest score to process for calculation of average
-    int NUMBER_OF_RUNS = 100;              // Number of time to repeat the complete process
-    bool PRINT_AVERAGES = false;           // Wheather to print averages of every run
-    bool PRINT_FINAL_AVERAGE = true;       // Wheather to print final average of NUMBER_OF_RUNS
-    bool PRINT_TABLE = false;              // Wheather to print the complete table record
+    int NUMBER_OF_RECORDS_PER_RUN = 10;   // Total number of records to generate in one run
+    int LUCK_SHARE_PER_RUN = 5;           // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
+    int AVG_COUNT_PER_RUN = 11;           // Number of records from highest score to process for calculation of average
+    int NUMBER_OF_RUNS = 1;               // Number of time to repeat the complete process
+    bool PRINT_AVERAGES = false;          // Wheather to print averages of every run
+    bool PRINT_FINAL_AVERAGE = true;      // Wheather to print final average of NUMBER_OF_RUNS
+    bool PRINT_FULL_TABLE = false;        // Wheather to print the complete table record
+    bool SHOW_PARTIAL_TABLE = true;       // To display partial records from top
+    int NUMBER_OF_RECORDS_TO_DISPLAY = 5; // Number of records to display from top
 
-    for (int i = 0; i < NUMBER_OF_RUNS; i++)
+        for (int i = 0; i < NUMBER_OF_RUNS; i++)
     {
         calculateScore(NUMBER_OF_RECORDS_PER_RUN, LUCK_SHARE_PER_RUN, AVG_COUNT_PER_RUN, averageList, PRINT_AVERAGES,
-                       PRINT_FINAL_AVERAGE, PRINT_TABLE);
+                       PRINT_FINAL_AVERAGE, PRINT_FULL_TABLE, SHOW_PARTIAL_TABLE, NUMBER_OF_RECORDS_TO_DISPLAY);
     }
 
     if (NUMBER_OF_RUNS > 0 && PRINT_FINAL_AVERAGE)
