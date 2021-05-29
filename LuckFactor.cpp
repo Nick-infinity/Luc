@@ -10,6 +10,7 @@
 /*
 * 
 * This program models luck factor in determinig success of a person based on his skill and talent
+* Very basic based on simple average
 *
 */
 
@@ -32,11 +33,12 @@ public:
     int skillsRank;
     int index;
 
-    Person(int lower, int upper)
+    Person(int lower, int upper, double luckShare)
     {
-        this->count = count + 1; // keep track of index
-        this->luck = generateRandom(lower, upper);
-        this->skills_talent = generateRandom(lower, upper);
+        double skillShare = 100 - luckShare;
+        this->count = count + 1;                                                 // keep track of index
+        this->luck = generateRandom(lower, upper) * (luckShare / 100);           // luckshare% of total luck
+        this->skills_talent = generateRandom(lower, upper) * (skillShare / 100); // skillshare% of toal skills
         this->index = count;
     }
 
@@ -81,11 +83,11 @@ public:
     }
 };
 
-double generateScore(Person *p1, double luckShare, double skillShare) // generate score from luck and sill_talent
+double generateScore(Person *p1) // generate score from luck and sill_talent
 {
     double luck = p1->luck;
     double skills = p1->skills_talent;
-    double score = luck * (luckShare / 100) + skills * (skillShare / 100);
+    double score = luck + skills;
     return score;
 }
 
@@ -124,12 +126,12 @@ void sortOnSkills(vector<Person *> &persons)
     }
 }
 
-void calculateScore(vector<Person *> &persons, double luckShare, double skillShare)
+void calculateFinalScore(vector<Person *> &persons)
 {
 
     for (int i = 0; i < persons.size(); i++)
     {
-        double finalScore = generateScore(persons[i], luckShare, skillShare);
+        double finalScore = generateScore(persons[i]);
 
         persons[i]->score = finalScore;
     }
@@ -145,18 +147,22 @@ void sortOnScore(vector<Person *> &persons)
 }
 
 // to nicely display information
-void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averagesList)
+void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averagesList, bool PRINT_AVERAGES,
+             bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE)
 {
     int field_one_width = 8, field_two_width = 12;
-    // cout << "Sno.  "
-    //      << "Index  "
-    //      << "LuckRank "
-    //      << "Luck "
-    //      << "SkillRank "
-    //      << "Skills "
-    //      << "Final_Rank "
-    //      << "Score " << endl
-    //      << endl;
+    if (PRINT_TABLE)
+    {
+        cout << "Sno.  "
+             << "Index  "
+             << "LuckRank "
+             << "Luck "
+             << "SkillRank "
+             << "Skills "
+             << "Final_Rank "
+             << "Score " << endl
+             << endl;
+    }
     double luckAverage = 0;
     double luckRankAverage = 0;
     double skillAverage = 0;
@@ -175,20 +181,28 @@ void display(vector<Person *> &persons, int avgCount, vector<Averages *> &averag
             scoreAverage = scoreAverage + p->score;
             rankAverage = rankAverage + p->finalRank;
         }
-        // cout << setprecision(4) << i + 1 << setw(field_one_width) << p->index << setw(field_one_width) << p->luckRank << setw(9) << p->luck << setw(field_one_width) << p->skillsRank << setw(field_one_width) << p->skills_talent << setw(field_one_width) << p->finalRank << setw(field_two_width) << p->score << endl;
+        if (PRINT_TABLE)
+        {
+            cout << setprecision(4) << i + 1 << setw(field_one_width) << p->index << setw(field_one_width) << p->luckRank << setw(9) << p->luck << setw(field_one_width) << p->skillsRank << setw(field_one_width) << p->skills_talent << setw(field_one_width) << p->finalRank << setw(field_two_width) << p->score << endl;
+        }
+    }
+    if (PRINT_AVERAGES)
+    {
+        cout << endl
+             << "AVERAGES: " << endl;
+        cout << setprecision(4) << "luckAverage " << luckAverage / avgCount << endl
+             << "luckRankAverage " << luckRankAverage / avgCount << endl
+             << "skillAverage " << skillAverage / avgCount << endl
+             << "skillRankAverage " << skillRankAverage / avgCount << endl
+             << "scoreAverage " << scoreAverage / avgCount << endl
+             << "rankAverage " << rankAverage / avgCount << endl;
     }
 
-    cout << endl
-         << "AVERAGES: " << endl;
-    cout << setprecision(4) << "luckAverage " << luckAverage / avgCount << endl
-         << "luckRankAverage " << luckRankAverage / avgCount << endl
-         << "skillAverage " << skillAverage / avgCount << endl
-         << "skillRankAverage " << skillRankAverage / avgCount << endl
-         << "scoreAverage " << scoreAverage / avgCount << endl
-         << "rankAverage " << rankAverage / avgCount << endl;
-
-    Averages *averages = new Averages(luckAverage / avgCount, luckRankAverage / avgCount, skillAverage / avgCount, skillRankAverage / avgCount, scoreAverage / avgCount, rankAverage / avgCount);
-    averagesList.push_back(averages);
+    if (PRINT_FINAL_AVERAGE)
+    {
+        Averages *averages = new Averages(luckAverage / avgCount, luckRankAverage / avgCount, skillAverage / avgCount, skillRankAverage / avgCount, scoreAverage / avgCount, rankAverage / avgCount);
+        averagesList.push_back(averages);
+    }
 }
 
 void printAverages_Average(vector<Averages *> &averageList)
@@ -222,7 +236,8 @@ void printAverages_Average(vector<Averages *> &averageList)
          << "scoreAverage " << scoreAverage / avgCount << endl
          << "rankAverage " << rankAverage / avgCount << endl;
 }
-void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Averages *> &averageList)
+void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Averages *> &averageList, bool PRINT_AVERAGES,
+                    bool PRINT_FINAL_AVERAGE, bool PRINT_TABLE)
 
 {
     double skillShare = 100 - luckShare;
@@ -231,30 +246,36 @@ void calculateScore(int totalPersons, double luckShare, int avgCount, vector<Ave
 
     for (int i = 0; i < totalPersons; i++)
     {
-        Person *p = new Person(lower, upper);
+        Person *p = new Person(lower, upper, luckShare);
         persons.push_back(p);
     }
 
     sortOnLuck(persons);
     sortOnSkills(persons);
-    calculateScore(persons, luckShare, skillShare);
+    calculateFinalScore(persons);
     sortOnScore(persons);
-    display(persons, avgCount, averageList);
+    display(persons, avgCount, averageList, PRINT_AVERAGES, PRINT_FINAL_AVERAGE, PRINT_TABLE);
 }
 
 int main()
 {
     srand(time(0));
     vector<Averages *> averageList;
-    int NUMBER_OF_RECORDS_PER_RUN = 15000;
-    int LUCK_SHARE_PER_RUN = 5;
-    int AVG_COUNT_PER_RUN = 10;
-    int NUMBER_OF_RUNS = 0;
+    int NUMBER_OF_RECORDS_PER_RUN = 15000; // Total number of records to generate in one run
+    int LUCK_SHARE_PER_RUN = 5;            // Percentage of luck in your success score // 100-LUCK = SKILL percentage in success score
+    int AVG_COUNT_PER_RUN = 50;            // Number of records from highest score to process for calculation of average
+    int NUMBER_OF_RUNS = 1000;             // Number of time to repeat the complete process
+    bool PRINT_AVERAGES = false;           // Wheather to print averages of every run
+    bool PRINT_FINAL_AVERAGE = true;       // Wheather to print final average of NUMBER_OF_RUNS
+    bool PRINT_TABLE = false;              // Wheather to print the complete table record
+
     for (int i = 0; i < NUMBER_OF_RUNS; i++)
     {
-        calculateScore(NUMBER_OF_RECORDS_PER_RUN, LUCK_SHARE_PER_RUN, AVG_COUNT_PER_RUN, averageList);
+        calculateScore(NUMBER_OF_RECORDS_PER_RUN, LUCK_SHARE_PER_RUN, AVG_COUNT_PER_RUN, averageList, PRINT_AVERAGES,
+                       PRINT_FINAL_AVERAGE, PRINT_TABLE);
     }
-    if (NUMBER_OF_RUNS > 0)
+
+    if (NUMBER_OF_RUNS > 0 && PRINT_FINAL_AVERAGE)
     {
         printAverages_Average(averageList);
     }
